@@ -1,3 +1,3 @@
 #backend learning
 
-This is a backend with javascriptat
+This is a backend with javascript
