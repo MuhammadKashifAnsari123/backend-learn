@@ -1,16 +1,21 @@
 // require('dotenv').config({path:'./env'})
 import dotenv from "dotenv";
 import connectdDB from "./db/index.js";
+import { app } from "./app.js";
 
 
 dotenv.config({
     path:"./env"
 })
 connectdDB()
-
-
-
-
+.then(() => {
+    app.listen(process.env.PORT || 8000, () => {
+        console.log(`Server Is Running at port: ${process.env.PORT}`)
+    })
+})
+.catch((err) => {
+    console.log("MONGO db connection failed !!!",err)
+})
 
 /*
 import express from "express";
