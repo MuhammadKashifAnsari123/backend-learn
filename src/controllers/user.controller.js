@@ -187,7 +187,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     if (!user) {
       throw new ApiError(401, "Invalid Refresh Token");
     }
-    if (!incomingRefreshToken !== user?.refreshToken) {
+    if (incomingRefreshToken !== user?.refreshToken) {
       throw new ApiError(401, "Refresh token is expired or used");
     }
     const options = {
@@ -234,7 +234,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 const getCurrentUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
-    .json(200, req.user, "current user fetched successfully");
+    .json(new ApiResponse(200, req.user, "current user fetched successfully"));
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
@@ -242,12 +242,12 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
   if (!fullName || !email) {
     throw new ApiError(400, "All fileds are required");
   }
-  const user = User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
-        fullName: fullName,
-        email: email,
+        fullName,
+        email,
       },
     },
     { new: true }
@@ -261,7 +261,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 const updateUserAvatar = asyncHandler(async(req, res) => {
     const avatarLocalPath = req.file?.path
     if (!avatarLocalPath) {
-        throw new ApiError(200,"Avatar file is missing")
+        throw new ApiError(400,"Avatar file is missing")
     }
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     if(!avatar.url){
@@ -286,11 +286,11 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
 const updateUsercoverImage = asyncHandler(async(req, res) => {
     const coverImageLocalPath = req.file?.path
     if (!coverImageLocalPath) {
-        throw new ApiError(200,"coverImage file is missing")
+        throw new ApiError(400,"coverImage file is missing")
     }
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
     if(!coverImage.url){
-      throw new ApiError(400, "Error while uploading on avatar")
+      throw new ApiError(400, "Error while uploading on coverImage")
     }
     const user = await User.findByIdAndUpdate(
       req.user?._id,
